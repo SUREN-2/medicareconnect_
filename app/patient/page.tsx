@@ -269,9 +269,9 @@ export default function PatientPage() {
 
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
-//       {/* ================= PAGE CONTAINER ================= */}
+//
 //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-//         {/* ================= HEADER ================= */}
+//
 //         <div
 //           className="flex justify-between items-center mb-8 p-5 rounded-2xl
 //                         bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg"
