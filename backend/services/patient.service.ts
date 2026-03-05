@@ -35,11 +35,9 @@ export const getPatientStats = async (patientId: string) => {
 
   const monthLogs = logs || [];
 
-  // Today status
   const todayLog = monthLogs.find((l) => l.date === todayStr);
   const todayStatus = todayLog?.status || "pending";
 
-  // Month stats
   const takenDaysMonth = monthLogs.filter((l) => l.status === "taken").length;
   const missedDaysMonth = monthLogs.filter((l) => l.status === "missed").length;
 
@@ -69,7 +67,7 @@ export const getPatientStats = async (patientId: string) => {
     }
   }
 
-  // Remaining days
+  // Remaining days in the full month
   const daysInMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,

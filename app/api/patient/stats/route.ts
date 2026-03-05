@@ -23,7 +23,7 @@ export const GET = withAuth(async (req: NextRequest, user: User) => {
     const stats = await getPatientStats(patientId);
 
 
-    console.log('patient' + stats)
+    // console.log('patient' + stats?.stats)
     
 
     return NextResponse.json({

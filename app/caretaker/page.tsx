@@ -44,6 +44,8 @@ export default function Page() {
     return <p>Loading data...</p>;
   }
 
+  console.log(stats?.stats);
+
   const userData = stats?.stats ?? {
     patientName: "No Patient",
     totalMedications: 0,

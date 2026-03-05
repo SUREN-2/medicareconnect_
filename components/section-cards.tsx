@@ -59,7 +59,7 @@ export function SectionCards() {
             </div>
           </CardDescription>
           <CardTitle className="text-lg font-semibold tabular-nums @[180px]/card:text-2xl">
-            {userData?.missedCurrentMonth || "-"}
+            {userData?.missedDaysCurrentMonth || "-"}
           </CardTitle>
         </CardHeader>
       </Card>

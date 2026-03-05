@@ -67,7 +67,7 @@ export const getMedicationLogsRepo = async (
       .select("*")
       .eq("patient_id", patientId)
       .gte("date", monthStartStr)
-      .lte("date", todayStr);   // IMPORTANT FIX
+      .lte("date", todayStr); // VERY IMPORTANT
 
     if (error) {
       throw new AppError("Database error", 500);
