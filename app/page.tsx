@@ -10,7 +10,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 flex flex-col">
-      {/* HEADER */}
       <div className="w-full px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-4 rounded-2xl shadow-lg">
           <div className="flex items-center gap-2">
@@ -28,24 +27,19 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* HERO SECTION */}
       <div className="flex flex-1 items-center justify-center px-4">
         <div className="max-w-4xl w-full text-center">
-          {/* TITLE */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
             Stay Consistent with Your{" "}
             <span className="text-purple-600">Medication</span>
           </h2>
 
-          {/* SUBTEXT */}
           <p className="text-gray-500 mt-4 text-lg">
             Track, manage, and never miss your daily medication with ease.
             Designed for both patients and caretakers.
           </p>
 
-          {/* BUTTONS */}
           <div className="mt-10 flex flex-col sm:flex-row gap-6 justify-center">
-            {/* PATIENT */}
             <Button
               onClick={() => router.push("/patient")}
               className="px-10 py-6 text-lg rounded-xl shadow-lg 
@@ -55,7 +49,6 @@ export default function LandingPage() {
               <i className="bi bi-person"></i> Patient
             </Button>
 
-            {/* CARETAKER */}
             <Button
               onClick={() => router.push("/caretaker")}
               className="px-10 py-6 text-lg rounded-xl shadow-lg 
@@ -66,14 +59,12 @@ export default function LandingPage() {
             </Button>
           </div>
 
-          {/* EXTRA PREMIUM TOUCH */}
           <div className="mt-12 text-sm text-gray-400">
             Trusted daily medication tracking system
           </div>
         </div>
       </div>
 
-      {/* FOOTER */}
       <div className="text-center text-gray-400 text-sm pb-6">
         © {new Date().getFullYear()} Medicare Connect. All rights reserved.
       </div>

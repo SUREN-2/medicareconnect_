@@ -167,7 +167,7 @@ export const takeMedicationRepo = async ({
       photo_url: photoUrl,
     };
 
-    // ✅ If record exists → UPDATE
+    
     if (existing) {
       const { error } = await supabaseAdmin
         .from("medication_logs")
@@ -179,7 +179,7 @@ export const takeMedicationRepo = async ({
       return { message: "Medication updated for today" };
     }
 
-    // ✅ If record does not exist → INSERT
+    
     const { error } = await supabaseAdmin
       .from("medication_logs")
       .insert({

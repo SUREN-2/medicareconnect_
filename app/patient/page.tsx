@@ -71,7 +71,6 @@ export default function PatientPage() {
   };
   const isDisabled = userData?.todayStatus === "taken";
 
-  // ✅ FIX: never null
   const medicationData: MedicationData[] = logs?.data || [];
 
   const schedule_time = userData?.scheduleTime

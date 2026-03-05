@@ -28,7 +28,7 @@ export const notificationSchema = z.object({
   schedule_time: z
     .string()
     .min(1, "Schedule time is required")
-    .transform((val) => val.slice(0, 5)) // normalize HH:MM
+    .transform((val) => val.slice(0, 5)) 
     .refine(
       (val) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(val),
       "Invalid time format (HH:MM)"

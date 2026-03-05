@@ -40,7 +40,6 @@ export default function UploadProof({
 
       console.log("Uploaded:", url);
 
-      // ✅ send to parent
       onUpload?.(url);
     } catch (err) {
       console.error(err);

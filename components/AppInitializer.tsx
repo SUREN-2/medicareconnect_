@@ -11,7 +11,7 @@ export default function AppInitializer({ children }: any) {
   const isPublic = pathname === "/auth/login" || pathname === "/auth/signup";
 
   useEffect(() => {
-    if (isPublic) return; // ✅ skip
+    if (isPublic) return;
 
     const restore = async () => {
       try {

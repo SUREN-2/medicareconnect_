@@ -14,6 +14,6 @@ export const useTakeMedication = (
       const res = await api.post("/patient/take-medication", data);
       return res.data;
     },
-    ...options, // ✅ this enables onSuccess, onError, etc.
+    ...options, 
   });
 };

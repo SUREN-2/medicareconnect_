@@ -24,7 +24,6 @@ export function HeroCards() {
 
           <div className="flex flex-col gap-2 rounded-lg border py-3 px-4 shadow-sm bg-purple-100">
             <div className="flex items-center justify-between">
-              {/* Left Content */}
               <div>
                 <strong className="block text-muted-foreground text-sm">
                   Daily Medication Time

@@ -101,19 +101,16 @@ export function MedicationCalendarCard() {
           />
 
           <div className="flex items-center justify-center gap-3 mt-4">
-            {/* Green - Taken */}
             <div className="flex items-center gap-1">
               <span className="w-4 h-4 rounded-full bg-green-400"></span>
               <span className="text-s text-muted-foreground">Taken</span>
             </div>
 
-            {/* Red - Missed */}
             <div className="flex items-center gap-1">
               <span className="w-4 h-4 rounded-full bg-red-400"></span>
               <span className="text-s text-muted-foreground">Missed</span>
             </div>
 
-            {/* Blue - Pending */}
             <div className="flex items-center gap-1">
               <span className="w-4 h-4 rounded-full bg-blue-400"></span>
               <span className="text-s text-muted-foreground">Pending</span>
