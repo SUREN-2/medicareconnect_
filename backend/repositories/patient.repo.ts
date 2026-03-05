@@ -139,7 +139,7 @@ export const getLast7DaysLogsRepo = async (patientId: string) => {
 type TakeMedicationInput = {
   patientId: string;
   medicationId: string;
-  photoUrl?: string;
+  photoUrl?: string | null;
 };
 
 export const takeMedicationRepo = async ({
@@ -149,8 +149,6 @@ export const takeMedicationRepo = async ({
 }: TakeMedicationInput) => {
   try {
     const today = new Date().toISOString().split("T")[0];
-
-    console.log('urlll'+ photoUrl)
 
     const { data: existing, error: fetchError } = await supabaseAdmin
       .from("medication_logs")
@@ -169,6 +167,7 @@ export const takeMedicationRepo = async ({
       photo_url: photoUrl,
     };
 
+    // ✅ If record exists → UPDATE
     if (existing) {
       const { error } = await supabaseAdmin
         .from("medication_logs")
@@ -177,20 +176,24 @@ export const takeMedicationRepo = async ({
 
       if (error) throw new AppError(error.message, 500);
 
-      return { message: "Medication marked as taken (updated)" };
+      return { message: "Medication updated for today" };
     }
 
-    const { error } = await supabase.from("medication_logs").insert({
-      patient_id: patientId,
-      medication_id: medicationId,
-      date: today,
-      ...payload,
-    });
+    // ✅ If record does not exist → INSERT
+    const { error } = await supabaseAdmin
+      .from("medication_logs")
+      .insert({
+        patient_id: patientId,
+        medication_id: medicationId,
+        date: today,
+        ...payload,
+      });
 
     if (error) throw new AppError(error.message, 500);
 
-    return { message: "Medication marked as taken created" };
-  } catch (err) {
-    throw new AppError("Database connection failed", 503);
+    return { message: "Medication log created for today" };
+
+  } catch (err: any) {
+    throw new AppError(err.message || "Database connection failed", 503);
   }
 };

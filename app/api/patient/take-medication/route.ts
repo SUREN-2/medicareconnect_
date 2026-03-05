@@ -17,6 +17,8 @@ export const POST = withAuth(async (req: NextRequest, user: User) => {
     console.log(body)
     console.log(patientId)
 
+    
+
     if (!patientId || !medicationId) {
       return NextResponse.json(
         { message: "patientId and medicationId are required" },

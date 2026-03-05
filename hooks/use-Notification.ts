@@ -34,7 +34,7 @@ export const useUpdateReminderSettings = () => {
 
   return useMutation({
     mutationFn: async (data: ReminderSettingsPayload) => {
-      const res = await api.put("/patient/notification/set-notification", {
+      const res = await api.post("/patient/notification/set-notification", {
         schedule_time: data.schedule_time,
         remainder_hours: data.remainder_hours,
         email: data.email,

@@ -132,7 +132,7 @@ export const getLast7DaysLogs = async (patientId: string) => {
 export const takeMedication = async (input: {
   patientId: string;
   medicationId: string;
-  photoUrl?: string;
+  photoUrl?: string | null;
 }) => {
   return await takeMedicationRepo(input);
 };
