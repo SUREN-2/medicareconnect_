@@ -137,19 +137,14 @@ export function AppSidebar({ onNavigate, ...props }: AppSidebarProps) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5 text-purple-700 !h:auto"
-            >
-              <a href="#">
-                <div className="w-6 h-6 flex items-center justify-center">
-                  <IconHeartHandshake className="w-full h-full text-purple-700" />
-                </div>
+            <SidebarMenuButton className="data-[slot=sidebar-menu-button]:!p-1.5 text-purple-700 !h:auto">
+              <div className="w-6 h-6 flex items-center justify-center">
+                <IconHeartHandshake className="w-full h-full text-purple-700" />
+              </div>
 
-                <span className="text-xl font-semibold text-brand-clr">
-                  Medicare Connect
-                </span>
-              </a>
+              <span className="text-xl font-semibold text-brand-clr">
+                Medicare Connect
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
