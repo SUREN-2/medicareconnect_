@@ -1,35 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { takeMedication } from "@/backend/services/patient.service";
+import { addMedication, takeMedication } from "@/backend/services/patient.service";
 import { User } from "@/backend/types/auth.types";
 import { withAuth } from "@/backend/middleware/withAuth";
 
 export const POST = withAuth(async (req: NextRequest, user: User) => {
-
   try {
-
-
-    // console.log('hii')
     const body = await req.json();
-    const patientId = user.id
+    const { name, dosage, scheduleTime } = body;
 
-    const {medicationId, photoUrl } = body;
+    const patientId = user.id;
 
-    // console.log(body)
-    // console.log(patientId)
-
-    
-
-    if (!patientId || !medicationId) {
+    if (!name) {
       return NextResponse.json(
-        { message: "patientId and medicationId are required" },
-        { status: 400 },
+        { message: "Medicine name required" },
+        { status: 400 }
       );
     }
 
-    const result = await takeMedication({
+    const result = await addMedication({
       patientId,
-      medicationId,
-      photoUrl,
+      name,
+      dosage,
+      scheduleTime,
     });
 
     return NextResponse.json({
@@ -39,7 +31,7 @@ export const POST = withAuth(async (req: NextRequest, user: User) => {
   } catch (error: any) {
     return NextResponse.json(
       { message: error.message || "Something went wrong" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 })

@@ -24,7 +24,7 @@ export function SiteHeader() {
             <i className="bi bi-person"></i> Patient
           </Button>
           <Button
-            className="cursor-pointer"
+            className="cursor-pointer bg-red-500 me-6"
             onClick={() => logout()}
             disabled={isPending}
           >

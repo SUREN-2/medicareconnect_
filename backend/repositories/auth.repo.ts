@@ -49,18 +49,18 @@ export const signupRepo = async ({ email, password, name }: SignupInput) => {
     name,
   });
 
-  const { error: mediError } = await supabaseAdmin.from("medications").insert({
-    patient_id: user.id,
-    name : "Dolo",
-    dosage: "500g",
-  });
+  // const { error: mediError } = await supabaseAdmin.from("medications").insert({
+  //   patient_id: user.id,
+  //   name : "Dolo",
+  //   dosage: "500g",
+  // });
 
-  if (error) {
-        throw new AppError("Failed to fetch medication logs", 500);
-      }
-  if (mediError) {
-    throw new Error(mediError.message);
-  }
+  // if (error) {
+  //       throw new AppError("Failed to fetch medication logs", 500);
+  //     }
+  // if (mediError) {
+  //   throw new Error(mediError.message);
+  // }
 
   if (profileError) {
     throw new Error(profileError.message);

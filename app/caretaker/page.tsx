@@ -10,9 +10,12 @@ import DashboardTabs from "@/components/dashtabs";
 import { usePatientStats } from "@/hooks/use-PatientLogs";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import AddMedicationModal from "@/components/add-medication";
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState("user_dashboard");
+  const [openMedicationModal, setOpenMedicationModal] = useState(false);
 
   const { accessToken } = useAuth();
   const router = useRouter();
@@ -41,7 +44,12 @@ export default function Page() {
     return <p>Loading data...</p>;
   }
 
-  const userData = stats?.stats || null;
+  const userData = stats?.stats ?? {
+    patientName: "No Patient",
+    totalMedications: 0,
+    takenToday: 0,
+    missedToday: 0,
+  };
 
   return (
     <div className="">
@@ -59,16 +67,25 @@ export default function Page() {
           <div className="flex flex-1 flex-col columns-md p-6">
             <div className="@container/main flex flex-1 flex-col gap-2">
               <div className="flex flex-col gap-1 px-4 md:px-4">
-                <div className="flex items-center gap-2">
-                  <IconUser className="w-6 h-6 text-primary" />
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center">
+                    <IconUser className="w-6 h-6 text-primary" />
 
-                  <h1 className="text-2xl md:text-3xl font-bold text-l-primary">
-                    {userData.patientName}
-                    <span className="text-muted-foreground text-lg font-normal">
-                      {" "}
-                      medication stats
-                    </span>
-                  </h1>
+                    <h1 className="text-2xl md:text-3xl font-bold text-l-primary">
+                      {userData?.patientName || "No Patient"}
+                      <span className="text-muted-foreground text-lg font-normal">
+                        {" "}
+                        medication stats
+                      </span>
+                    </h1>
+                  </div>
+
+                  <Button
+                    className="me-2"
+                    onClick={() => setOpenMedicationModal(true)}
+                  >
+                    Add Medication
+                  </Button>
                 </div>
               </div>
 
@@ -83,6 +100,11 @@ export default function Page() {
           </div>
         </SidebarInset>
       </SidebarProvider>
+
+      <AddMedicationModal
+        open={openMedicationModal}
+        onOpenChange={setOpenMedicationModal}
+      />
     </div>
   );
 }

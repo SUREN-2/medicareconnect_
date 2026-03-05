@@ -59,25 +59,27 @@ export const getMedicationRepo = async (patientId: string) => {
 export const getMedicationLogsRepo = async (
   patientId: string,
   monthStartStr: string,
+  todayStr: string
 ) => {
   try {
     const { data, error } = await supabaseAdmin
       .from("medication_logs")
       .select("*")
       .eq("patient_id", patientId)
-      .gte("date", monthStartStr);
+      .gte("date", monthStartStr)
+      .lte("date", todayStr);   // IMPORTANT FIX
 
     if (error) {
       throw new AppError("Database error", 500);
     }
 
-    return data;
+    return data || [];
   } catch (err) {
     console.error("Network error:", err);
 
     throw new AppError(
       "Service temporarily unavailable. Please try again.",
-      503,
+      503
     );
   }
 };
@@ -196,4 +198,34 @@ export const takeMedicationRepo = async ({
   } catch (err: any) {
     throw new AppError(err.message || "Database connection failed", 503);
   }
+};
+
+export const addMedicationRepo = async ({
+  patientId,
+  name,
+  dosage,
+  scheduleTime,
+}: {
+  patientId: string;
+  name: string;
+  dosage?: string;
+  scheduleTime?: string;
+}) => {
+  const { error } = await supabaseAdmin
+    .from("medications")
+    .upsert(
+      {
+        patient_id: patientId,
+        name,
+        dosage,
+        schedule_time: scheduleTime,
+      },
+      {
+        onConflict: "patient_id", // column that should be unique
+      }
+    );
+
+  if (error) throw new Error(error.message);
+
+  return { message: "Medication saved successfully" };
 };

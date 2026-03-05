@@ -22,6 +22,10 @@ export const GET = withAuth(async (req: NextRequest, user: User) => {
 
     const stats = await getPatientStats(patientId);
 
+
+    console.log('patient' + stats)
+    
+
     return NextResponse.json({
       success: true,
       stats,

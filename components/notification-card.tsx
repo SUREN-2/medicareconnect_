@@ -21,13 +21,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-// ✅ IMPORT HOOKS
 import {
   useNotifications,
   useUpdateReminderSettings,
-} from "@/hooks/use-Notification"; // adjust path if needed
+} from "@/hooks/use-Notification";
 
-// ✅ Zod Schema
 const schema = z
   .object({
     emailEnabled: z.boolean(),
@@ -82,13 +80,10 @@ export default function NotificationSettingsCard() {
 
   const emailEnabled = watch("emailEnabled");
 
-  // ✅ FETCH EXISTING SETTINGS
   const { data, isLoading } = useNotifications();
 
-  // ✅ UPDATE MUTATION
   const updateSettings = useUpdateReminderSettings();
 
-  // ✅ PREFILL FORM
   useEffect(() => {
     if (data?.data) {
       const settings = data.data;
@@ -114,7 +109,6 @@ export default function NotificationSettingsCard() {
       reminder_enabled: data.emailEnabled,
     };
 
-    // ✅ CALL API
     updateSettings.mutate(cleanData, {
       onSuccess: () => {
         toast.success("Preferences saved successfully");

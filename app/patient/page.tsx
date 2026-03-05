@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { useLogout } from "@/hooks/use-Logout";
 import { useTakeMedication } from "@/hooks/use-TakeMedication";
+import { toast } from "sonner";
 
 export default function PatientPage() {
   const { accessToken } = useAuth();
@@ -54,11 +55,22 @@ export default function PatientPage() {
 
   const userData = stats?.stats || null;
 
+  console.log("new" + userData);
+
+  const cleanData = {
+    medicationId: userData?.medicineId,
+    photoUrl: photoUrl || undefined,
+  };
+
   const handleTakeMedication = () => {
     if (isTaken) return;
-    takeMedication({
-      medicationId: userData?.medicineId,
-      photoUrl: photoUrl || undefined,
+    takeMedication(cleanData, {
+      onSuccess: () => {
+        toast.success("Medicine marked as Taken");
+      },
+      onError: () => {
+        toast.error("Failed to taken medicine");
+      },
     });
   };
 

@@ -5,6 +5,7 @@ import {
   getLast7DaysLogsRepo,
   takeMedicationRepo,
   getMedicationRepo,
+  addMedicationRepo,
 } from "../repositories/patient.repo";
 type MedicationData = {
   date: string;
@@ -12,45 +13,51 @@ type MedicationData = {
   time: string;
   taken_at: string;
 };
-
 export const getPatientStats = async (patientId: string) => {
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
 
-  console.log(today + " " + todayStr);
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthStartStr = monthStart.toISOString().split("T")[0];
 
+  // Week start Monday
   const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() - 6);
+  const day = today.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  weekStart.setDate(today.getDate() + diff);
   const weekStartStr = weekStart.toISOString().split("T")[0];
 
-  const profile = await ProfileRepo(patientId);
-
-  const logs = await getMedicationLogsRepo(patientId, monthStartStr);
-
-
-  const medicationData = await getMedicationRepo(patientId)
+  const [profile, logs, medicationData] = await Promise.all([
+    ProfileRepo(patientId).catch(() => null),
+    getMedicationLogsRepo(patientId, monthStartStr, todayStr).catch(() => []),
+    getMedicationRepo(patientId).catch(() => null),
+  ]);
 
   const monthLogs = logs || [];
 
+  // Today status
   const todayLog = monthLogs.find((l) => l.date === todayStr);
   const todayStatus = todayLog?.status || "pending";
 
+  // Month stats
   const takenDaysMonth = monthLogs.filter((l) => l.status === "taken").length;
   const missedDaysMonth = monthLogs.filter((l) => l.status === "missed").length;
-  const totalDaysMonth = monthLogs.length;
 
-  const consistency =
+  const totalDaysMonth = takenDaysMonth + missedDaysMonth;
+
+  const consistencyRate =
     totalDaysMonth > 0
       ? Number(((takenDaysMonth / totalDaysMonth) * 100).toFixed(2))
       : 0;
 
+  // Week stats
   const weekLogs = monthLogs.filter((l) => l.date >= weekStartStr);
-  const takenWeek = weekLogs.filter((l) => l.status === "taken").length;
 
+  const takenCurrentWeek = weekLogs.filter((l) => l.status === "taken").length;
+
+  // Streak
   const sortedLogs = [...monthLogs].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
   let streak = 0;
@@ -62,23 +69,34 @@ export const getPatientStats = async (patientId: string) => {
     }
   }
 
-  const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  const remainingDays = lastDay.getDate() - today.getDate();
+  // Remaining days
+  const daysInMonth = new Date(
+    today.getFullYear(),
+    today.getMonth() + 1,
+    0
+  ).getDate();
+
+  const remainingDaysCurrentMonth = daysInMonth - totalDaysMonth;
 
   return {
-    patientName: profile.name,
-    medicineName : medicationData.name,
-    dosage: medicationData.dosage,
-    scheduleTime : medicationData.schedule_time,
-    medicineId: medicationData.id,
+    patientName: profile?.name ?? "No Patient",
+
+    medicineName: medicationData?.name ?? null,
+    dosage: medicationData?.dosage ?? null,
+    scheduleTime: medicationData?.schedule_time ?? null,
+    medicineId: medicationData?.id ?? null,
+
     todayStatus,
-    consistencyRate: consistency,
+
+    consistencyRate,
     streak,
-    missedCurrentMonth: missedDaysMonth,
-    takenCurrentWeek: takenWeek,
-    missedDaysCurrentMonth: missedDaysMonth,
+
+    takenCurrentWeek,
+
     takenDaysCurrentMonth: takenDaysMonth,
-    remainingDaysCurrentMonth: remainingDays,
+    missedDaysCurrentMonth: missedDaysMonth,
+
+    remainingDaysCurrentMonth,
   };
 };
 
@@ -135,4 +153,14 @@ export const takeMedication = async (input: {
   photoUrl?: string | null;
 }) => {
   return await takeMedicationRepo(input);
+};
+
+
+export const addMedication = async (input: {
+  patientId: string;
+  name: string;
+  dosage?: string;
+  scheduleTime?: string;
+}) => {
+  return await addMedicationRepo(input);
 };

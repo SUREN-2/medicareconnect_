@@ -47,9 +47,9 @@ export const useUpdateReminderSettings = () => {
     },
 
     // onSuccess: () => {
-    //   // Refetch updated settings
+    //   
     //   queryClient.invalidateQueries({ queryKey: ["settings"] });
-    //   queryClient.invalidateQueries({ queryKey: ["notifications"] }); // optional
+    //   queryClient.invalidateQueries({ queryKey: ["notifications"] }); 
     // },
   });
 };
