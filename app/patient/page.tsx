@@ -55,7 +55,7 @@ export default function PatientPage() {
 
   const userData = stats?.stats || null;
 
-  console.log("new" + userData);
+  // console.log("new" + userData);
 
   const cleanData = {
     medicationId: userData?.medicineId,

@@ -1,3 +1,4 @@
+import { todo } from "node:test";
 import {
   getMedicationLogsRepo,
   ProfileRepo,
@@ -16,6 +17,8 @@ type MedicationData = {
 export const getPatientStats = async (patientId: string) => {
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
+
+  console.log(todayStr)
 
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const monthStartStr = monthStart.toISOString().split("T")[0];
