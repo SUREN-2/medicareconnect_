@@ -1,21 +1,23 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
-
-import { Badge } from "@/components/ui/badge";
+import React from "react";
 import {
   Card,
-  CardAction,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePatientStats } from "@/hooks/use-PatientLogs";
 
-export function SectionCards() {
-  const { data: stats, isLoading: statsLoading } = usePatientStats();
-  const userData = stats?.stats || null;
-  // stats?.totalMedications ?? 0
+type Stats = {
+  consistencyRate?: number;
+  streak?: number;
+  missedDaysCurrentMonth?: number;
+  takenCurrentWeek?: number;
+};
 
+type Props = {
+  stats?: Stats;
+};
+
+function SectionCards({ stats }: Props) {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card bg-purple-200 justify-around">
@@ -28,11 +30,13 @@ export function SectionCards() {
               Consistency Rate
             </div>
           </CardDescription>
+
           <CardTitle className="text-lg font-semibold tabular-nums @[180px]/card:text-2xl">
-            {userData?.consistencyRate || "-"}%
+            {stats?.consistencyRate ?? "-"}%
           </CardTitle>
         </CardHeader>
       </Card>
+
       <Card className="@container/card bg-purple-200">
         <CardHeader>
           <CardDescription>
@@ -43,11 +47,13 @@ export function SectionCards() {
               Streak
             </div>
           </CardDescription>
+
           <CardTitle className="text-lg font-semibold tabular-nums @[180px]/card:text-2xl">
-            {userData?.streak == 0 ? "0" : userData?.streak || "-"}
+            {stats?.streak ?? "-"}
           </CardTitle>
         </CardHeader>
       </Card>
+
       <Card className="@container/card bg-purple-200">
         <CardHeader>
           <CardDescription>
@@ -58,11 +64,13 @@ export function SectionCards() {
               Missed This Month
             </div>
           </CardDescription>
+
           <CardTitle className="text-lg font-semibold tabular-nums @[180px]/card:text-2xl">
-            {userData?.missedDaysCurrentMonth || "-"}
+            {stats?.missedDaysCurrentMonth ?? "-"}
           </CardTitle>
         </CardHeader>
       </Card>
+
       <Card className="@container/card bg-purple-200">
         <CardHeader>
           <CardDescription>
@@ -73,11 +81,14 @@ export function SectionCards() {
               Taken This Week
             </div>
           </CardDescription>
+
           <CardTitle className="text-lg font-semibold tabular-nums @[180px]/card:text-2xl">
-            {userData?.takenCurrentWeek || "-"}
+            {stats?.takenCurrentWeek ?? "-"}
           </CardTitle>
         </CardHeader>
       </Card>
     </div>
   );
 }
+
+export default React.memo(SectionCards);

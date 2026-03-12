@@ -1,14 +1,11 @@
+import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { usePatientLogs, usePatientStats } from "@/hooks/use-PatientLogs";
 
-import { IconUsers } from "@tabler/icons-react";
+type Props = {
+  stats?: any;
+};
 
-export function HeroCards() {
-  const { data: stats, isLoading: statsLoading } = usePatientStats();
-
-  console.log(stats);
-
+function HeroCards({ stats }: Props) {
   const userData = stats?.stats;
 
   return (
@@ -33,18 +30,14 @@ export function HeroCards() {
 
               <div className="flex items-center justify-center">
                 {userData?.todayStatus == "pending" ? (
-                  <>
-                    <Badge className="bg-blue-100 text-md text-blue-600 border border-blue-300 ">
-                      Pending
-                    </Badge>{" "}
-                  </>
+                  <Badge className="bg-blue-100 text-md text-blue-600 border border-blue-300">
+                    Pending
+                  </Badge>
                 ) : (
-                  <>
-                    <Badge className="bg-green-100 text-md text-green-600 border border-green-300 ">
-                      Taken
-                    </Badge>{" "}
-                  </>
-                )}{" "}
+                  <Badge className="bg-green-100 text-md text-green-600 border border-green-300">
+                    Taken
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -53,3 +46,5 @@ export function HeroCards() {
     </div>
   );
 }
+
+export default React.memo(HeroCards);

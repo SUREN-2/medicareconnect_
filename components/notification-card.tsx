@@ -1,8 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -63,8 +62,10 @@ export default function NotificationSettingsCard() {
   const {
     register,
     handleSubmit,
+    reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -81,21 +82,24 @@ export default function NotificationSettingsCard() {
   const emailEnabled = watch("emailEnabled");
 
   const { data, isLoading } = useNotifications();
-
   const updateSettings = useUpdateReminderSettings();
 
   useEffect(() => {
-    if (data?.data) {
-      const settings = data.data;
+    if (!data?.data) return;
 
-      setValue("emailEnabled", settings.reminder_enabled);
-      setValue("caretakerEmail", settings.email || "");
-      setValue("alertAfter", String(settings.remainder_hours || ""));
-      setValue("reminderTime", settings.schedule_time || "");
-      setValue("subject", settings.email_subject || "");
-      setValue("content", settings.email_body || "");
-    }
-  }, [data, setValue]);
+    const settings = data.data;
+
+    reset({
+      emailEnabled: settings.reminder_enabled,
+      caretakerEmail: settings.email || "",
+      alertAfter: String(settings.remainder_hours || ""),
+      reminderTime: settings.schedule_time
+        ? settings.schedule_time.slice(0, 5)
+        : "",
+      subject: settings.email_subject || "",
+      content: settings.email_body || "",
+    });
+  }, [data, reset]);
 
   const sanitize = (value: string) => value.replace(/[<>]/g, "");
 
@@ -138,9 +142,15 @@ export default function NotificationSettingsCard() {
               <i className="bi bi-envelope text-red-500"></i> Email
               Notifications
             </Label>
+
             <Switch
               checked={emailEnabled}
-              onCheckedChange={(val) => setValue("emailEnabled", val)}
+              onCheckedChange={(val) =>
+                setValue("emailEnabled", val, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
             />
           </div>
 
@@ -149,6 +159,7 @@ export default function NotificationSettingsCard() {
             disabled={!emailEnabled}
             {...register("caretakerEmail")}
           />
+
           {errors.caretakerEmail && (
             <p className="text-red-500 text-sm">
               {errors.caretakerEmail.message}
@@ -164,28 +175,30 @@ export default function NotificationSettingsCard() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Alert After (hrs)</Label>
-              <Select
-                onValueChange={(val) =>
-                  setValue("alertAfter", val, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select hours" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Hour</SelectItem>
-                  <SelectItem value="2">2 Hours</SelectItem>
-                  <SelectItem value="3">3 Hours</SelectItem>
-                  <SelectItem value="4">4 Hours</SelectItem>
-                  <SelectItem value="5">5 Hour</SelectItem>
-                  <SelectItem value="6">6 Hours</SelectItem>
-                  <SelectItem value="7">7 Hours</SelectItem>
-                  <SelectItem value="8">8 Hours</SelectItem>
-                </SelectContent>
-              </Select>
+
+              <Controller
+                control={control}
+                name="alertAfter"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select hours" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="1">1 Hour</SelectItem>
+                      <SelectItem value="2">2 Hours</SelectItem>
+                      <SelectItem value="3">3 Hours</SelectItem>
+                      <SelectItem value="4">4 Hours</SelectItem>
+                      <SelectItem value="5">5 Hour</SelectItem>
+                      <SelectItem value="6">6 Hours</SelectItem>
+                      <SelectItem value="7">7 Hours</SelectItem>
+                      <SelectItem value="8">8 Hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+
               {errors.alertAfter && (
                 <p className="text-red-500 text-sm">
                   {errors.alertAfter.message}
@@ -195,7 +208,9 @@ export default function NotificationSettingsCard() {
 
             <div className="space-y-2">
               <Label>Daily Reminder Time</Label>
+
               <Input type="time" {...register("reminderTime")} />
+
               {errors.reminderTime && (
                 <p className="text-red-500 text-sm">
                   {errors.reminderTime.message}
@@ -211,6 +226,7 @@ export default function NotificationSettingsCard() {
           </Label>
 
           <Input placeholder="Subject" {...register("subject")} />
+
           {errors.subject && (
             <p className="text-red-500 text-sm">{errors.subject.message}</p>
           )}
@@ -220,6 +236,7 @@ export default function NotificationSettingsCard() {
             rows={5}
             {...register("content")}
           />
+
           {errors.content && (
             <p className="text-red-500 text-sm">{errors.content.message}</p>
           )}

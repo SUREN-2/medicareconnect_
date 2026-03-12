@@ -1,18 +1,20 @@
 "use client";
 
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroCards } from "@/components/hero-cards";
-import { MedicationProgressCard } from "@/components/progress-card";
-import { RecentActivityCard } from "@/components/activity-card";
 import { MedicationCalendarCard } from "@/components/calendar-card";
 import NotificationSettingsCard from "@/components/notification-card";
+import MedicationProgressCard from "@/components/progress-card";
+import HeroCards from "./hero-cards";
+import RecentActivityCard from "./activity-card";
 
 type Props = {
   value: string;
   onChange: (val: string) => void;
+  stats?: any;
 };
 
-export default function DashboardTabsbs({ value, onChange }: Props) {
+function DashboardTabsbs({ value, onChange, stats }: Props) {
   return (
     <Tabs
       value={value}
@@ -28,8 +30,8 @@ export default function DashboardTabsbs({ value, onChange }: Props) {
       </TabsList>
 
       <TabsContent value="user_dashboard" className="mt-6 space-y-4">
-        <HeroCards />
-        <MedicationProgressCard />
+        <HeroCards stats={stats} />
+        <MedicationProgressCard stats={stats} />
       </TabsContent>
 
       <TabsContent value="activity" className="mt-6">
@@ -46,3 +48,5 @@ export default function DashboardTabsbs({ value, onChange }: Props) {
     </Tabs>
   );
 }
+
+export default React.memo(DashboardTabsbs);

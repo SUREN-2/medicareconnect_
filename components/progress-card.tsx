@@ -1,17 +1,25 @@
+import React, { useMemo } from "react";
 import { Progress } from "@/components/ui/progress";
-import { usePatientStats } from "@/hooks/use-PatientLogs";
 
-export function MedicationProgressCard() {
-  const { data: stats, isLoading: statsLoading } = usePatientStats();
+type Props = {
+  stats?: any;
+};
 
-  const userData = stats?.stats || null;
-  const progress = userData?.consistencyRate;
+function MedicationProgressCard({ stats }: Props) {
+  const userData = stats?.stats ?? null;
 
-  const userStats = {
-    taken: userData?.takenDaysCurrentMonth || "-",
-    missed: userData?.missedDaysCurrentMonth || "-",
-    remaining: userData?.remainingDaysCurrentMonth || "-",
-  };
+  const progress = useMemo(() => {
+    return userData?.consistencyRate ?? 0;
+  }, [userData]);
+
+  const userStats = useMemo(
+    () => ({
+      taken: userData?.takenDaysCurrentMonth ?? "-",
+      missed: userData?.missedDaysCurrentMonth ?? "-",
+      remaining: userData?.remainingDaysCurrentMonth ?? "-",
+    }),
+    [userData],
+  );
 
   return (
     <div className="flex flex-col rounded-xl border bg-card p-6 mx-4 shadow-sm">
@@ -45,3 +53,5 @@ export function MedicationProgressCard() {
     </div>
   );
 }
+
+export default React.memo(MedicationProgressCard);

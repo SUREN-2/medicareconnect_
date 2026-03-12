@@ -4,7 +4,7 @@ import * as React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { usePatientLogs, usePatientStats } from "@/hooks/use-PatientLogs";
+import { usePatientLogs } from "@/hooks/use-PatientLogs";
 
 export function MedicationCalendarCard() {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
@@ -22,22 +22,35 @@ export function MedicationCalendarCard() {
     taken_at?: string;
   };
 
-  console.log(logs);
-  const medicationData: MedicationData[] = logs?.data || null;
-
-  // const schedule_time = userData?.scheduleTime
-  //   ? format(new Date(`2000-01-01T${userData.scheduleTime}`), "hh:mm a")
-  //   : "N/A";
-
-  console.log("s" + medicationData);
+  const medicationData: MedicationData[] = logs?.data ?? [];
 
   const selectedDateStr = selectedDate
     ? format(selectedDate, "yyyy-MM-dd")
     : null;
 
-  const selectedData = medicationData?.find(
-    (item) => item.date === selectedDateStr,
-  );
+  const selectedData = React.useMemo(() => {
+    return medicationData.find((item) => item.date === selectedDateStr);
+  }, [medicationData, selectedDateStr]);
+
+  const { takenDates, missedDates, pendingDates } = React.useMemo(() => {
+    const taken: Date[] = [];
+    const missed: Date[] = [];
+    const pending: Date[] = [];
+
+    medicationData.forEach((item) => {
+      const date = new Date(item.date);
+
+      if (item.status === "taken") taken.push(date);
+      else if (item.status === "missed") missed.push(date);
+      else if (item.status === "pending") pending.push(date);
+    });
+
+    return {
+      takenDates: taken,
+      missedDates: missed,
+      pendingDates: pending,
+    };
+  }, [medicationData]);
 
   return (
     <Card className="w-full rounded-2xl shadow-lg border bg-white ">
@@ -79,17 +92,9 @@ export function MedicationCalendarCard() {
               day_outside: "text-gray-300",
             }}
             modifiers={{
-              taken: (medicationData ?? [])
-                .filter((d) => d.status === "taken")
-                .map((d) => new Date(d.date)),
-
-              missed: (medicationData ?? [])
-                .filter((d) => d.status === "missed")
-                .map((d) => new Date(d.date)),
-
-              pending: (medicationData ?? [])
-                .filter((d) => d.status === "pending")
-                .map((d) => new Date(d.date)),
+              taken: takenDates,
+              missed: missedDates,
+              pending: pendingDates,
             }}
             modifiersClassNames={{
               taken: "bg-green-100 text-green-700 border border-green-300",
@@ -116,37 +121,6 @@ export function MedicationCalendarCard() {
               <span className="text-s text-muted-foreground">Pending</span>
             </div>
           </div>
-          {/* <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={setSelectedDate}
-            className="rounded-xl border p-6 w-full"
-            classNames={{
-              day: "h-12 w-12  sm:h-9 sm:w-9 flex items-center justify-center rounded-md transition-all mx-auto ",
-
-              day_selected: "bg-purple-200 text-purple-800 !important",
-
-              day_today: "bg-red-600 text-blue-900 !important",
-
-              day_outside: "text-gray-300",
-
-              table: "border-separate border-spacing-2 mx-auto",
-            }}
-            modifiers={{
-              taken: medicationData
-                .filter((d) => d.status === "taken")
-                .map((d) => new Date(d.date)),
-
-              missed: medicationData
-                .filter((d) => d.status === "missed")
-                .map((d) => new Date(d.date)),
-            }}
-            modifiersClassNames={{
-              taken:
-                "bg-green-100 text-green-700 border border-green-300 scale-105",
-              missed: "bg-red-100 text-red-600 border border-red-300 scale-105",
-            }}
-          /> */}
         </div>
 
         <div className="w-full lg:flex-1 bg-gray-50 rounded-xl p-6 shadow-inner border">

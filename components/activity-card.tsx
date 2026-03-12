@@ -1,35 +1,8 @@
+import React, { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { usePatientWeekStats } from "@/hooks/use-PatientLogs";
 import { format } from "date-fns";
 import { Card } from "./ui/card";
-import { ActivityProps, useState } from "react";
-
-// const activities = [
-//   {
-//     day: "Monday",
-//     date: "Feb 24",
-//     time: "08:00 AM",
-//     status: "completed",
-//   },
-//   {
-//     day: "Tuesday",
-//     date: "Feb 25",
-//     time: "08:15 AM",
-//     status: "completed",
-//   },
-//   {
-//     day: "Wednesday",
-//     date: "Feb 26",
-//     time: "—",
-//     status: "missed",
-//   },
-//   {
-//     day: "Thursday",
-//     date: "Feb 27",
-//     time: "08:05 AM",
-//     status: "completed",
-//   },
-// ];
 
 type Activity = {
   day: string;
@@ -47,15 +20,23 @@ type PatientLog = {
   url: string;
 };
 
-export function RecentActivityCard() {
+function RecentActivityCard() {
   const { data: stats, isLoading: weekStatsLoading } = usePatientWeekStats();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // console.log(stats.data);
+  const activities: Activity[] = useMemo(() => {
+    if (!stats?.data) return [];
 
-  const weekData = stats?.data;
+    return stats.data.map((item: PatientLog) => ({
+      day: format(new Date(item.date), "EEEE"),
+      date: format(new Date(item.date), "MMM dd"),
+      time: item.taken_at,
+      status: item.status === "taken" ? "completed" : item.status,
+      url: item.url,
+    }));
+  }, [stats]);
 
-  if (weekStatsLoading)
+  if (weekStatsLoading) {
     return (
       <Card className="p-6 rounded-2xl shadow-lg bg-white">
         <div className="animate-pulse space-y-3">
@@ -65,15 +46,9 @@ export function RecentActivityCard() {
         </div>
       </Card>
     );
-  if (!stats) return null;
+  }
 
-  const activities = (weekData ?? []).map((item: PatientLog) => ({
-    day: format(new Date(item.date), "EEEE"),
-    date: format(new Date(item.date), "MMM dd"),
-    time: item.taken_at,
-    status: item.status === "taken" ? "completed" : item.status,
-    url: item.url,
-  }));
+  if (!stats) return null;
 
   return (
     <div className="w-full bg-card border rounded-xl p-5 shadow-sm">
@@ -82,16 +57,16 @@ export function RecentActivityCard() {
       </h2>
 
       <div className="flex flex-col gap-3">
-        {activities.map((item: Activity, index: number) => (
+        {activities.map((item, index) => (
           <div
             key={index}
             className="flex items-center justify-between p-3 rounded-lg border bg-muted/40"
           >
             <div className="flex items-center">
               <span className="me-4 text-2xl">
-                {item.status == "completed" ? (
+                {item.status === "completed" ? (
                   <i className="bi bi-check-circle-fill text-green-600"></i>
-                ) : item.status == "pending" ? (
+                ) : item.status === "pending" ? (
                   <i className="bi bi-three-dots text-blue-600"></i>
                 ) : (
                   <i className="bi bi-x-circle-fill text-red-600"></i>
@@ -109,7 +84,7 @@ export function RecentActivityCard() {
             </div>
 
             <div>
-              {item?.url ? (
+              {item.url ? (
                 <Badge
                   onClick={() => setPreviewUrl(item.url)}
                   className="me-2 capitalize border-black text-black bg-transparent cursor-pointer"
@@ -119,6 +94,7 @@ export function RecentActivityCard() {
               ) : (
                 " "
               )}
+
               <Badge
                 className={`capitalize ${
                   item.status === "completed"
@@ -150,3 +126,5 @@ export function RecentActivityCard() {
     </div>
   );
 }
+
+export default React.memo(RecentActivityCard);
