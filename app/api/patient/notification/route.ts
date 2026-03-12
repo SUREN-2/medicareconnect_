@@ -8,7 +8,7 @@ export const GET = withAuth(async (req: NextRequest, user: User) => {
   try {
     const patientId = user.id;
 
-    console.log('from here'+patientId)
+    // console.log('from here'+patientId)
 
     const data = await getNotificationSettings(patientId);
 

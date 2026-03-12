@@ -16,18 +16,26 @@ import { useLogout } from "@/hooks/use-Logout";
 import { useTakeMedication } from "@/hooks/use-TakeMedication";
 import { toast } from "sonner";
 
+type StatusType = "taken" | "missed" | "pending";
+
+type MedicationData = {
+  date: string;
+  status: StatusType;
+  time?: string;
+};
+
 export default function PatientPage() {
   const { accessToken } = useAuth();
+  const router = useRouter();
 
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [isTaken, setIsTaken] = useState(false);
-
-  const router = useRouter();
 
   const { mutate: logout, isPending } = useLogout();
 
   const { data: stats, isLoading: statsLoading } = usePatientStats();
   const { data: logs, isLoading: logsLoading } = usePatientLogs();
+
   const { mutate: takeMedication, isPending: taking } = useTakeMedication({
     onSuccess: () => {
       setIsTaken(true);
@@ -41,53 +49,58 @@ export default function PatientPage() {
     }
   }, [accessToken, router]);
 
-  if (accessToken === undefined) {
-    return <p>Loading...</p>;
-  }
-
-  if (accessToken === null) {
-    return null;
-  }
-
-  if (statsLoading || logsLoading) {
-    return <p>Loading ...</p>;
-  }
-
   const userData = stats?.stats || null;
 
-  // console.log("new" + userData);
+  const medicationData = React.useMemo<MedicationData[]>(() => {
+    return logs?.data ?? [];
+  }, [logs?.data]);
 
-  const cleanData = {
-    medicationId: userData?.medicineId,
-    photoUrl: photoUrl || undefined,
-  };
+  const schedule_time = React.useMemo(() => {
+    if (!userData?.scheduleTime) return "N/A";
 
-  const handleTakeMedication = () => {
-    if (isTaken) return;
-    takeMedication(cleanData, {
-      onSuccess: () => {
-        toast.success("Medicine marked as Taken");
-      },
-      onError: () => {
-        toast.error("Failed to taken medicine");
-      },
+    return format(new Date(`2000-01-01T${userData.scheduleTime}`), "hh:mm a");
+  }, [userData?.scheduleTime]);
+
+  const cleanData = React.useMemo(() => {
+    return {
+      medicationId: userData?.medicineId,
+      photoUrl: photoUrl || undefined,
+    };
+  }, [userData?.medicineId, photoUrl]);
+
+  const modifiers = React.useMemo(() => {
+    const taken: Date[] = [];
+    const missed: Date[] = [];
+    const pending: Date[] = [];
+
+    medicationData.forEach((d) => {
+      const date = new Date(d.date);
+
+      if (d.status === "taken") taken.push(date);
+      if (d.status === "missed") missed.push(date);
+      if (d.status === "pending") pending.push(date);
     });
-  };
 
-  type StatusType = "taken" | "missed" | "pending";
+    return { taken, missed, pending };
+  }, [medicationData]);
 
-  type MedicationData = {
-    date: string;
-    status: StatusType;
-    time?: string;
-  };
-  const isDisabled = userData?.todayStatus === "taken";
+  const handleTakeMedication = React.useCallback(() => {
+    // console.log("clicked");
+    if (isTaken) return;
 
-  const medicationData: MedicationData[] = logs?.data || [];
+    takeMedication(cleanData, {
+      onSuccess: () => toast.success("Medicine marked as Taken"),
+      onError: () => toast.error("Failed to take medicine"),
+    });
+  }, [isTaken, cleanData, takeMedication]);
 
-  const schedule_time = userData?.scheduleTime
-    ? format(new Date(`2000-01-01T${userData.scheduleTime}`), "hh:mm a")
-    : "N/A";
+  const isDisabled = userData?.todayStatus === "taken" || isTaken;
+
+  if (accessToken === undefined) return <p>Loading...</p>;
+
+  if (accessToken === null) return null;
+
+  if (statsLoading || logsLoading) return <p>Loading ...</p>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100">
@@ -200,19 +213,7 @@ export default function PatientPage() {
                 day_today: "bg-blue-100 text-blue-700",
                 day_outside: "text-gray-300",
               }}
-              modifiers={{
-                taken: medicationData
-                  .filter((d) => d.status === "taken")
-                  .map((d) => new Date(d.date)),
-
-                missed: medicationData
-                  .filter((d) => d.status === "missed")
-                  .map((d) => new Date(d.date)),
-
-                pending: medicationData
-                  .filter((d) => d.status === "pending")
-                  .map((d) => new Date(d.date)),
-              }}
+              modifiers={modifiers}
               modifiersClassNames={{
                 taken: "bg-green-100 text-green-700 border border-green-300",
                 missed: "bg-red-100 text-red-600 border border-red-300",
@@ -258,11 +259,18 @@ export default function PatientPage() {
               <Button
                 className="w-full text-lg"
                 onClick={handleTakeMedication}
-                disabled={isDisabled}
+                disabled={isDisabled || taking}
               >
-                {userData?.todayStatus === "taken"
-                  ? "Already Taken"
-                  : "Mark as Taken"}
+                {taking ? (
+                  <span className="flex items-center gap-2">
+                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    Processing...
+                  </span>
+                ) : isTaken || userData?.todayStatus === "taken" ? (
+                  "Already Taken"
+                ) : (
+                  "Mark as Taken"
+                )}
               </Button>
             </Card>
 
